@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="kuleuven.publications">
+
+    <browser:resourceDirectory
+      name="publications.static"
+      directory="static"
+    />
+    
+    <browser:page
+      name="view"
+      for="kuleuven.publications.publist.IKULPublist"
+      class=".publistview.PublistView"
+      template="templates/publist.pt"
+      permission="zope2.View"
+    />
+</configure>

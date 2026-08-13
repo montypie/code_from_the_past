@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="kuleuven.publications">
+
+    <include file="configure.zcml"/>
+    <!-- utility registration for test data connector -->
+    <utility
+      factory="kuleuven.publications.tests.dataconnectors.TestDataConnector"
+      provides="kuleuven.publications.interfaces.IDataConnector"
+      name="dataconnector"
+      />
+
+</configure>

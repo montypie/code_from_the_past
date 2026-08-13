@@ -1,0 +1,144 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="kuleuven.publications">
+<head><title>KU Leuven selected publicaitons list</title></head>
+<body>
+
+<div metal:fill-slot="main">
+<tal:main-macro metal:define-macro="main"
+                tal:define="title context/Title;
+                            description context/Description;">
+
+<h1 tal:content="title">Publist title</h1>
+<span class="ondertitel" tal:content="description">Publist description</span>
+
+<div tal:condition="context/introtext"
+     tal:content="structure context/introtext/output" />
+
+<tal:response define="allpubs view/getPubsData;
+                      hasresponse python:allpubs is not None;">
+
+    <div tal:condition="not:hasresponse">
+      <div metal:use-macro="context/global_statusmessage/macros/portal_message">
+                  Portal status message
+      </div>
+    </div>
+
+
+<div tal:condition="hasresponse">
+
+    <tal:results define="hasresults python:allpubs != []"> 
+    <div tal:condition="not:hasresults">
+      No publications found in LIRIAS for collection:
+      <span style="font-weight:bold" tal:content="context/colsearch" />
+    </div>
+
+    <tal:pubblock condition="python:hasresults and len(allpubs) == 3">
+    <div tal:define="publist python:allpubs[0];
+                     total python:allpubs[1];
+                     pagination python:view.computePagination(total, len(publist));
+                     total_pages python:pagination['pages'];
+                     current_page python:pagination['current'];
+                     nextnr python:pagination['nextnr'];
+                     next python:nextnr is not None;
+                     prevnr python:pagination['prevnr'];
+                     previous python:prevnr is not None;
+                     lastnr python:pagination['lastnr'];
+                     sortby python:request.get('sortby') or 'scdate';">
+
+    <!-- sorting -->
+    <div id="sorting">Sort: 
+    <span tal:condition="python:sortby=='scdate'" class="highlight" i18n:translate="">newest first</span>
+    <a tal:condition="python:sortby!='scdate'" href="#" tal:attributes="href
+    string:${request/URL0}?sortby=scdate" i18n:translate="">newest first</a>
+    |
+    <span tal:condition="python:sortby=='screator'" class="highlight" i18n:translate="">author</span>
+    <a href="#" tal:condition="python:sortby!='screator'" tal:attributes="href
+    string:${request/URL0}?sortby=screator" i18n:translate="">author</a>
+    |
+    <span tal:condition="python:sortby=='stitle'" class="highlight" i18n:translate="">title</span>
+    <a href="#" tal:condition="python:sortby!='stitle'" tal:attributes="href
+    string:${request/URL0}?sortby=stitle" i18n:translate="">title</a>
+
+</div>
+
+    
+    <!-- pagination top -->
+     <span class="line" tal:condition="python:total_pages==1">&nbsp;</span>
+    <div class="nextprevious" tal:condition="python:total_pages!=1">
+    <a class="previous" href="#"
+       tal:condition="previous"
+       tal:attributes="href string:${request/URL0}?sortby=${sortby}&fromnr=${prevnr}"
+       i18n:translate="">« previous</a>
+    
+    <span tal:content="current_page" />/<a href="#" tal:attributes="href string:${request/URL0}?sortby=${sortby}&fromnr=${lastnr}"><span tal:content="total_pages" /></a>
+    <a class="next" href="#"
+        tal:condition="next"
+        tal:attributes="href string:${request/URL0}?sortby=${sortby}&fromnr=${nextnr}"
+        i18n:translate="">next »</a>
+    </div>
+
+    <ul class="pubresults">
+    <tal:publoop repeat="onepub publist">
+        <li tal:define="contributors python:onepub['contributors'];
+                        creators python:onepub['creators'];
+                        ptitle python:onepub['ptitle'];
+                        backlink python:onepub['backlink'];
+                        srclink python:onepub['srclink'];
+                        pub_info python:onepub['pub_info'];
+                        publisher python:onepub['publisher'];
+                        ptype python:onepub['ptype'];">
+          <div class="pubtype" tal:condition="ptype">
+          <a href="#" target="_blank"
+                     tal:condition="srclink"
+                     tal:attributes="href string:$srclink"
+                     tal:content="string:$ptype" />
+          <span tal:condition="not:srclink"
+                tal:content="string:$ptype" />
+          </div>
+
+          <span tal:condition="creators"
+                tal:content="string:$creators;" />
+
+          <a href="#" target="_blank" tal:condition="python:ptitle and backlink"
+                     tal:attributes="href string:$backlink"
+                     tal:content="string:$ptitle." />
+          <span tal:condition="python:ptitle and not backlink"
+                tal:content="string:$ptitle." />
+
+          <span tal:condition="contributors"
+                tal:content="contributors" />
+
+          <span tal:condition="pub_info" tal:content="string:$pub_info"/>
+          <span tal:condition="publisher" tal:content="string:Publisher: $publisher"/>
+        </li>
+      </tal:publoop>
+    </ul>
+    <br />
+    
+    <!-- pagination bottom -->
+    <div class="nextprevious" tal:condition="python:total_pages!=1">
+    <a class="previous" href="#"
+       tal:condition="previous"
+       tal:attributes="href string:${request/URL0}?sortby=${sortby}&fromnr=${prevnr}"
+       i18n:translate="">« previous</a>
+    
+    <span tal:content="current_page" />/<a href="#" tal:attributes="href string:${request/URL0}?sortby=${sortby}&fromnr=${lastnr}"><span tal:content="total_pages" /></a>
+    
+    <a class="next" href="#"
+        tal:condition="next"
+        tal:attributes="href string:${request/URL0}?sortby=${sortby}&fromnr=${nextnr}"
+        i18n:translate="">next »</a>
+    </div>
+
+    </div>
+    </tal:pubblock>
+
+  </tal:results>
+  </div>
+</tal:response>
+</tal:main-macro>
+</div>
+</body>
+</html>

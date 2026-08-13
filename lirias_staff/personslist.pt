@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html i18n:domain="wiwo.ui">
+<body tal:define="personids view/getPersonIds;
+      start python:int(path('request/start | nothing') or 0);
+      batch python:modules['ZTUtils'].Batch(personids, size=2000, start=start);
+      end python:batch.end;
+      previous python:batch.previous;
+      next python:batch.next">
+  <div tal:condition="python: batch.next" tal:repeat="person_id batch">
+    <a href="" tal:attributes="href string:http://www.kuleuven.be/wieiswie/nl/person/${person_id}"><span
+    tal:replace="person_id"/></a>
+  </div>
+</body>
+</html>
+
